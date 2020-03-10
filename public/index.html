@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Guernsey Covid-19 Tracker</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/7.10.0/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/7.10.0/firebase-analytics.js"></script>
+    <!--script defer src="/__/firebase/7.9.3/firebase-auth.js"></script>
+    <script defer src="/__/firebase/7.9.3/firebase-firestore.js"></script-->
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 720px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+     /* #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }*/
+      #message { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="message">
+      <h2>Welcome</h2>
+      <h1>Guernsey Covid-19 Tracker</h1>
+      <p>This data on Gov.gg was last updated <strong id="lastUpdated"></strong>.</p>
+      <div id="tracker_graph" style="width:calc(100% - 10px);height:480px;"></div>
+    </div>
+    <p id="load">Covid-19 Tracker Loading&hellip;</p>
+
+    <script>
+      let colours = { "Positive results":'rgb(214, 39, 40)', "Awaiting results":'rgb(255, 127, 14) ', "Negative results":'rgb(44, 160, 44)', "Number of samples tested":'rgb(31, 119, 180)' }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        
+        try {
+          let app = firebase.app();
+          firebase.analytics();
+          // let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
+          
+          $.ajax({
+            url: "https://us-central1-gg-covid-19.cloudfunctions.net/graphData",
+            success: function( result ) {
+              const updated = result['Updated']
+              const plot_data = [];
+              const ignoreKeys = ['cacheUntil', 'Updated', 'Saved'];
+
+              for (const key in result) {
+                if (ignoreKeys.indexOf(key) == -1) {
+                  plot_data.push({
+                    name: key,
+                    x: updated,
+                    y: result[key],
+                    mode: 'lines',
+                    line: {
+                      color: colours[key]
+                    }
+                  });
+                }
+              }
+              GRAPH = document.getElementById('tracker_graph');
+
+              Plotly.plot(GRAPH, 
+                plot_data,
+                { margin: { t: 15 ,b: 25 } }, //layout
+                {scrollZoom: true}); // controls
+
+              /* Current Plotly.js version */
+              console.log( Plotly.BUILD );
+
+              let cacheUtil = moment(result.cacheUntil);
+              let lastUpdated = moment(result['Updated'][0]);
+
+              document.getElementById('load').innerHTML = `Covid tracker loaded.  Data will refresh ${cacheUtil.fromNow()}`;
+              document.getElementById('lastUpdated').innerHTML = lastUpdated.calendar();
+            }
+          });
+        } catch (e) {
+          console.error(e);
+          document.getElementById('load').innerHTML = 'Error loading the Covid tracker.';
+        }
+      });
+    </script>
+  </body>
+</html>
