@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Guernsey Covid-19 Tracker</title>
+    <meta name="google-site-verification" content="8piRUSWRxw32V06Sgtlp6P154T_YZOL0Q9N_mPtcFDM" />
 
     <!-- update the version number as needed -->
     <script defer src="/__/firebase/7.10.0/firebase-app.js"></script>
@@ -32,6 +33,18 @@
         body, #message { margin-top: 0; background: white; box-shadow: none; }
         body { border-top: 16px solid #ffa100; }
       }
+      #isolate {
+        border: 1px, solid, rgb(128, 55, 59);
+        background-color:rgb(198, 84, 89);
+        color:rgb(255, 255, 255);
+        font-family: Roboto, Helvetica, Arial, sans-serif; 
+        font-size:18px;
+        margin:20px;
+        padding:20px;
+        text-align:center;
+        width:256.938px;
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
@@ -40,9 +53,11 @@
       <h1>Guernsey Covid-19 Tracker</h1>
       <p>This data on Gov.gg was last updated <strong id="lastUpdated"></strong>.</p>
       <div id="tracker_graph" style="width:calc(100% - 10px);height:480px;"></div>
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <a href="https://gov.gg/selfisolate" id="isolate">Should I self-isolate?</a>
+      </div>
     </div>
     <p id="load">Covid-19 Tracker Loading&hellip;</p>
-
     <script>
       let colours = { "Positive results":'rgb(214, 39, 40)', "Awaiting results":'rgb(255, 127, 14) ', "Negative results":'rgb(44, 160, 44)', "Number of samples tested":'rgb(31, 119, 180)' }
 
@@ -78,7 +93,7 @@
               Plotly.plot(GRAPH, 
                 plot_data,
                 { margin: { t: 15 ,b: 25 } }, //layout
-                {scrollZoom: true}); // controls
+                {scrollZoom: true, responsive: true}); // controls
 
               /* Current Plotly.js version */
               console.log( Plotly.BUILD );

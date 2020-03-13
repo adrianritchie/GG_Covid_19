@@ -9,6 +9,40 @@ admin.initializeApp();
 let results: any;
 let lastGrabbed: any = null;
 
+const storeUpdate = function (data: any, type: string) {
+    if (lastGrabbed < new Date(data['Updated'])) {
+
+        if (!!results) {
+            results.cacheUntil = moment().add(30, 'm');
+
+            for (const key in data) {
+                if (!results.hasOwnProperty(key)) {
+                    results[key] = [];
+                }
+                results[key].push(data[key]);
+            }
+        }
+
+        admin.firestore().collection('tracking').add(data).catch((err) => { console.log("Error: " + err.message); });
+        admin.firestore().collection('web_hooks').limit(1).get()
+            .then(querySnapshot => {
+                querySnapshot.forEach(documentSnapshot => {
+                    for (const url of documentSnapshot.get('urls')) {
+                        console.log("Webhook url: " + url);
+                        https.get(url);
+                    }
+                });
+            })
+            .catch((err) => { console.log("Error: " + err.message); });
+
+        lastGrabbed = new Date(data['Updated']);
+        return data;
+    }
+    else {
+        return `No change - ${type}`;
+    }
+}
+
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
@@ -24,7 +58,6 @@ export const refreshData = functions.https.onRequest((request, response) => {
             const table = $('table').first();
 
             const scraped_data: Array<Array<string>> = [];
-
 
             table.find('tr').map(function (i, el) {
                 scraped_data.push([]);
@@ -42,18 +75,10 @@ export const refreshData = functions.https.onRequest((request, response) => {
             o["Saved"] = new Date().toISOString();
 
             if (!!lastGrabbed) {
-                if (lastGrabbed < new Date(o['Updated'])) {
-                    admin.firestore().collection('tracking').add(o).catch(() => 'something went wrong');
-                    response.send(o);
-                    results = null;
-                    lastGrabbed = new Date(o['Updated']);
-                }
-                else {
-                    response.send('No change - quick check');
-                }
+                const result = storeUpdate(o, 'quick check')
+                response.send(result);
             }
             else {
-
                 admin.firestore()
                     .collection('tracking')
                     .orderBy('Updated', 'desc').limit(1).get()
@@ -61,15 +86,10 @@ export const refreshData = functions.https.onRequest((request, response) => {
                         querySnapshot.forEach(documentSnapshot => {
                             lastGrabbed = new Date(documentSnapshot.get('Updated'));
                         });
-                    }).then(() => {
-                        if (lastGrabbed < new Date(o['Updated'])) {
-                            admin.firestore().collection('tracking').add(o).catch(() => 'something went wrong');
-                            response.send(o);
-                            results = null;
-                        }
-                        else {
-                            response.send('No change');
-                        }
+                    })
+                    .then(() => {
+                        const result = storeUpdate(o, 'reload check')
+                        response.send(result);
                     })
                     .catch(err => response.send(err));
             }
@@ -96,10 +116,11 @@ export const graphData = functions.https.onRequest((request, response) => {
                     results[key].push(data[key]);
                 }
             });
-        }).then(() => {
+        })
+        .then(() => {
             response.send(results);
         })
-            .catch(err => response.send(err));
+        .catch(err => response.send(err));
     }
     else {
         response.send(results);
