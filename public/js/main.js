@@ -126,7 +126,7 @@ let draw_changes = function(data) {
       return v.Day;
     }),
     y: diffReturned.map(function(v) {
-      return v.Returned;
+      return -v.Returned;
     }),
     type: "bar",
     marker: { color: "#58A4B0" }
