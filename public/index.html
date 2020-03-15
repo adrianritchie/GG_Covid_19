@@ -12,27 +12,238 @@
     <script defer src="/__/firebase/7.10.0/firebase-analytics.js"></script>
     <script defer src="/__/firebase/init.js"></script>
 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.0.2/css/adminlte.min.css"
+      integrity="sha256-tDEOZyJ9BuKWB+BOSc6dE4cI0uNznodJMx11eWZ7jJ4="
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+      integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+      crossorigin="anonymous"
+    />
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet" />
+
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script src="js/main.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
+    <!--link rel="stylesheet" type="text/css" href="css/style.css" media="screen" /-->
+    <link rel="stylesheet" type="text/css" href="css/main.css" media="screen" />
   </head>
 
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Guernsey Covid-19 Tracker</h1>
-      <p>This data on Gov.gg was last updated <strong id="lastUpdated"></strong>.</p>
-      <div id="tracker_graph" class="plot"></div>
-      <div style="display: flex; align-items: center; justify-content: center;">
-        <a href="https://gov.gg/selfisolate" id="isolate">Should I self-isolate?</a>
+  <body class="hold-transition layout-top-nav">
+    <div class="wrapper">
+      <!-- Navbar -->
+      <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
+        <div class="container">
+          <a href="index.html" class="navbar-brand">
+            <span class="brand-text font-weight-light">Guernsey Covid-19 Tracker</span>
+          </a>
+          <button
+            class="navbar-toggler order-1"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarCollapse"
+            aria-controls="navbarCollapse"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a href="index.html" class="nav-link">Home</a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">Contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <!-- /.navbar -->
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+          <div class="container">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h3 class="m-0 text-dark">Live Covid-19 Tracking for Guernsey</h3>
+              </div>
+              <!-- /.col -->
+            </div>
+            <!-- /.row -->
+          </div>
+          <!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+
+        <!-- Main content -->
+        <div class="content">
+          <div class="container">
+
+            <!-- Current figures -->
+            <div class="row">
+              <div class="col-lg-3 col-sm-6">
+                <div class="small-box bg-info">
+                  <div class="overlay dark ggLoading">
+                    <i class="fas fa-3x fa-sync-alt"></i>
+                  </div>
+                  <div class="inner">
+                    <h3 id="currentTotal">-</h3>
+                    <p>Total tested</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-vial"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-3 col-sm-6">
+                <div class="small-box bg-warning">
+                  <div class="overlay dark ggLoading">
+                    <i class="fas fa-3x fa-sync-alt"></i>
+                  </div>
+                  <div class="inner">
+                    <h3 id="currentAwaiting">-</h3>
+                    <p>Awaiting results</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-hourglass-half"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-3 col-sm-6">
+                <div class="small-box bg-success">
+                  <div class="overlay dark ggLoading">
+                    <i class="fas fa-3x fa-sync-alt"></i>
+                  </div>
+                  <div class="inner">
+                    <h3 id="currentNegative">-</h3>
+                    <p>Negative results</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-heart"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-3 col-sm-6">
+                <div class="small-box bg-danger">
+                  <div class="overlay dark ggLoading">
+                    <i class="fas fa-3x fa-sync-alt"></i>
+                  </div>
+                  <div class="inner">
+                    <h3 id="currentPositive">-</h3>
+                    <p>Positive results</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-procedures"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ./current-figures-->
+
+            <!-- About data -->
+            <div class="row">
+              <div class="col">
+                <div class="card">
+                  <div class="overlay dark ggLoading">
+                    <i class="fas fa-3x fa-sync-alt"></i>
+                  </div>
+                  <div class="card-header">
+                    <h3 class="card-title">About The Data</h3>
+          
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                        <i class="fas fa-minus"></i></button>
+                      <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
+                        <i class="fas fa-times"></i></button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
+                        The coronavirus page on Gov.gg was last updated <strong id="lastUpdated"></strong>. The data on this page is cached for 30 minutes and will next refresh <strong id="nextRefresh"></strong>.
+                      </div>
+                      <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
+                        <a href="https://gov.gg/selfisolate" class="btn btn-lg btn-danger btn-block">Should I self-isolate?</a>            
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ./about-data-->
+
+            <div class="row">
+              <div class="col">
+                <div class="card">
+                  <div class="overlay dark ggLoading">
+                    <i class="fas fa-3x fa-sync-alt"></i>
+                  </div>
+                  <div class="card-header">
+                    <h5 class="card-title m-0">Tracking Graphs</h5>
+
+                    <div class="card-tools">
+                      <ul class="nav nav-pills ml-auto">
+                        <li class="nav-item">
+                          <a class="nav-link active" href="#sigma-chart" data-toggle="tab">Aggregate</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#delta-chart" data-toggle="tab">Changes</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="tab-content p-0">
+                      <div class="chart tab-pane row active" id="sigma-chart">  
+                        <div class="plot col-12" id="tracker_graph"></div>
+                        The above graph plots the tracking data publish by Gov.gg.  Each point on the graph represents an update being published to their Coronavirus page, whether or not it is a change in the tracking numbers.
+                      </div>
+                      <div class="chart tab-pane row" id="delta-chart">
+                        <div class="plot col-12" id="changes_graph"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.col -->
+
+            </div>
+            <!-- /.row -->
+          </div>
+          <!-- /.container-fluid -->
+        </div>
+        <!-- /.content -->
       </div>
-      <div id="changes_graph" class="plot"></div>
+      <!-- /.content-wrapper -->
+
+      <!-- Main Footer -->
+      <footer class="main-footer">
+        <!-- To the right -->
+        <div class="float-right d-none d-sm-inline">
+          Original data source: <a href="https://gov.gg/coronavirus">Gov.gg</a>
+        </div>
+        <!-- Default to the left -->
+        <strong>Copyright &copy; 2020 <a href="https://kodo.gg">Kodo.gg</a>.</strong> All rights reserved.
+      </footer>
     </div>
-    <p id="load">Covid-19 Tracker Loading&hellip;</p>
+    <!-- ./wrapper -->
+
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         try {
@@ -45,11 +256,19 @@
               render_data(result);
             }
           });
+
+          
         } catch (e) {
           console.error(e);
           document.getElementById("load").innerHTML = "Error loading the Covid tracker.";
         }
       });
     </script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha256-WqU1JavFxSAMcLP2WIOI+GB2zWmShMI82mTpLDcqFUg="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.0.2/js/adminlte.min.js"></script>
   </body>
 </html>

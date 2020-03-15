@@ -5,25 +5,36 @@ let colours = {
   "Number of samples tested": "rgb(31, 119, 180)"
 };
 
+let graph_data = {};
+
 let render_data = function(data) {
-  draw_cummulative(data);
-  set_lastUpdated(data);
-  draw_changes(data);
+  graph_data = data;
+  draw_cummulative(graph_data);
+  draw_changes(graph_data);
+  set_lastUpdated(graph_data);
+
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    window.dispatchEvent(new Event('resize'));
+  });
+  window.dispatchEvent(new Event('resize'));
 };
 
 let plot_graph = function(elementId, plot_data) {
   GRAPH = document.getElementById(elementId);
 
-  Plotly.plot(
+  Plotly.react(
     GRAPH,
     plot_data,
-    {
-      margin: { t: 15, b: 25 },
-      paper_bgcolor: "whitesmoke",
-      plot_bgcolor: "whitesmoke"
-    }, //layout
-    { scrollZoom: true, responsive: true }
-  ); // controls
+    { 
+      margin: { t: 15, b: 30 }, 
+      width: "100%", 
+      autosize: true,
+      xaxis: {
+        showgrid: true
+      }
+    }, // layout
+    { scrollZoom: true, responsive: true } // controls
+  );
 };
 
 let draw_cummulative = function(data) {
@@ -37,7 +48,8 @@ let draw_cummulative = function(data) {
         name: key,
         x: updated,
         y: data[key],
-        mode: "lines",
+        type: "scatter",
+        mode: "lines+markers",
         line: {
           color: colours[key]
         }
@@ -54,16 +66,17 @@ let draw_changes = function(data) {
   for (const i in data["Updated"]) {
     let current = moment(data["Updated"][i]).startOf("day");
 
-    if (i == 0 || current < moment(data["Updated"][i - 1]).startOf("day")) {
+    if (i == 0 || current < filtered_data[filtered_data.length -1].Day) {
       const record = {};
       record.Day = current;
       record.Tested = data["Number of samples tested"][i];
-      record.Returned =
-        data["Negative results"][i] + data["Positive results"][i];
+      record.Returned = data["Negative results"][i] + data["Positive results"][i];
       record.Pending = data["Awaiting results"][i];
       filtered_data.push(record);
     }
   }
+
+  console.log(filtered_data);
 
   const diffTested = [];
   const diffReturned = [];
@@ -74,6 +87,7 @@ let draw_changes = function(data) {
     })
     .forEach(function(v, i, d) {
       if (i == 0) {
+        diffPending.push({ Day: v.Day.toDate(), Pending: v.Pending });
         return;
       }
       if (v.Tested > d[i - 1].Tested) {
@@ -138,8 +152,19 @@ let set_lastUpdated = function(data) {
   let cacheUtil = moment(data.cacheUntil);
   let lastUpdated = moment(data["Updated"][0]);
 
-  document.getElementById(
-    "load"
-  ).innerHTML = `Covid tracker loaded.  Data will refresh ${cacheUtil.fromNow()}`;
-  document.getElementById("lastUpdated").innerHTML = lastUpdated.calendar();
+  let currentTotal = data["Number of samples tested"][0];
+  let currentNegative = data["Negative results"][0];
+  let currentPositive = data["Positive results"][0];
+  let currentAwaiting = data["Awaiting results"][0];
+
+  $("#nextRefresh").text(cacheUtil.fromNow());
+  $("#lastUpdated").text(lastUpdated.calendar());
+  
+  $('#currentTotal').text(currentTotal);
+  $('#currentNegative').text(currentNegative);
+  $('#currentPositive').text(currentPositive);
+  $('#currentAwaiting').text(currentAwaiting);
+
+  $('.ggLoading').hide()
+  
 };
