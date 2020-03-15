@@ -20,6 +20,11 @@
       {
         "source": "**",
         "destination": "/index.html"
+      },
+      {
+        // Excludes specified pathways from rewrites
+        "source": "!/@(js|css)/**",
+        "destination": "/index.html"
       }
     ]
   },
