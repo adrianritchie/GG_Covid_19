@@ -103,6 +103,10 @@ export const refreshData = functions.https.onRequest((request, response) => {
 export const graphData = functions.https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*');
 
+    if (!!request.query.clearResults) {
+        results = null;
+    }
+
     if (!results || results.cacheUntil < moment()) {
         results = { cacheUntil: moment().add(30, 'm') };
 
@@ -129,5 +133,5 @@ export const graphData = functions.https.onRequest((request, response) => {
 
 export const forceUpdate = functions.https.onRequest((request, response) => {
     results = null;
-    response.send("Ok");
+    response.send(`Ok: ${request.query.clearResults}`);
 });
