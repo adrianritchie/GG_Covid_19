@@ -93,8 +93,8 @@
           <div class="container">
 
             <!-- Current figures -->
-            <div class="row">
-              <div class="col-lg-3 col-sm-6">
+            <div class="d-flex flex-column flex-md-row currentNumbers">
+              <div class="flex-fill py-sm-0 pr-md-2">
                 <div class="small-box bg-info">
                   <div class="overlay dark ggLoading">
                     <i class="fas fa-3x fa-sync-alt"></i>
@@ -109,7 +109,7 @@
                 </div>
               </div>
 
-              <div class="col-lg-3 col-sm-6">
+              <div class="flex-fill py-sm-0 px-md-2">
                 <div class="small-box bg-warning">
                   <div class="overlay dark ggLoading">
                     <i class="fas fa-3x fa-sync-alt"></i>
@@ -124,7 +124,7 @@
                 </div>
               </div>
 
-              <div class="col-lg-3 col-sm-6">
+              <div class="flex-fill py-sm-0 px-md-2">
                 <div class="small-box bg-success">
                   <div class="overlay dark ggLoading">
                     <i class="fas fa-3x fa-sync-alt"></i>
@@ -139,7 +139,8 @@
                 </div>
               </div>
 
-              <div class="col-lg-3 col-sm-6">
+              <div class="flex-fill py-sm-0 pl-md-2">
+              <!-- <div class="flex-fill px-md-2"> -->
                 <div class="small-box bg-danger">
                   <div class="overlay dark ggLoading">
                     <i class="fas fa-3x fa-sync-alt"></i>
@@ -149,10 +150,26 @@
                     <p>Positive results</p>
                   </div>
                   <div class="icon">
-                    <i class="fas fa-procedures"></i>
+                    <i class="fas fa-biohazard"></i>
                   </div>
                 </div>
               </div>
+              
+              <!-- <div class="flex-fill pl-md-2">
+                <div class="small-box bg-secondary">
+                  <div class="overlay dark ggLoading">
+                    <i class="fas fa-3x fa-sync-alt"></i>
+                  </div>
+                  <div class="inner">
+                    <h3 id="currentPositive">-</h3>
+                    <p>Reported deaths</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-skull-crossbones"></i>
+                  </div>
+                </div>
+              </div> -->
+
             </div>
             <!-- ./current-figures-->
 
@@ -169,8 +186,6 @@
                     <div class="card-tools">
                       <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
                         <i class="fas fa-minus"></i></button>
-                      <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
-                        <i class="fas fa-times"></i></button>
                     </div>
                   </div>
                   <div class="card-body">

@@ -3,3 +3,7 @@
   height: 600px;
   width: 100%;
 }
+
+.currentNumbers > .flex-fill {
+  flex: 1 1 0 !important;
+}
