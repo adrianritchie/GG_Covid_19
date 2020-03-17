@@ -56,17 +56,13 @@
             <span class="navbar-toggler-icon"></span>
           </button>
 
-          <div class="collapse navbar-collapse order-3" id="navbarCollapse">
-            <!-- Left navbar links -->
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a href="index.html" class="nav-link">Home</a>
-              </li>
-              <li class="nav-item">
-                <a href="mailto:ar@kodo.gg?subject=Guernsey%20Covid-19%20Tracker" class="nav-link">Contact</a>
-              </li>
-            </ul>
-          </div>
+          <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+            <li class="nav-item">
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-about">
+                About
+              </button>
+            </li>
+          </ul>
         </div>
       </nav>
       <!-- /.navbar -->
@@ -258,6 +254,28 @@
       </footer>
     </div>
     <!-- ./wrapper -->
+
+    <div class="modal fade" id="modal-about" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Default Modal</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>This site has been created and is maintained by Adrian Ritchie.  For enquiries abuot the site, please email: <a href="mailto:ar@kodo.gg?subject=Guernsey%20Covid-19%20Tracker">ar@kodo.gg</a>.</p>
+            <p>The source code for the site is available on <a href="https://github.com/adrianritchie/GG_Covid_19">GitHub <i class="fab fa-github"></i></a>.  If you are able to, please submit a pull-request for any enhancements to make this site better.</p>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
 
     <script>
       document.addEventListener("DOMContentLoaded", function() {
