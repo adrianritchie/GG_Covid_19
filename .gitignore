@@ -6,6 +6,9 @@ yarn-debug.log*
 yarn-error.log*
 firebase-debug.log*
 
+#until I get npm registry sorted
+package-lock.json 
+
 # Firebase cache
 .firebase/
 
