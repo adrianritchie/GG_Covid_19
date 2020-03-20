@@ -290,6 +290,12 @@
             }
           });
 
+          $('#modal-about').on('shown.bs.modal', function (e) {
+            firebase.analytics().logEvent('about_modal_shown');
+          });
+          $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            firebase.analytics().logEvent('switch_chart', { 'chart' : e.target });
+          });
           
         } catch (e) {
           console.error(e);
