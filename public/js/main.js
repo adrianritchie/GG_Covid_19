@@ -13,9 +13,6 @@ let render_data = function(data) {
   draw_changes(graph_data);
   set_lastUpdated(graph_data);
 
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    window.dispatchEvent(new Event('resize'));
-  });
   window.dispatchEvent(new Event('resize'));
 };
 
