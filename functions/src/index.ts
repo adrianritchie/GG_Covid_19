@@ -47,7 +47,7 @@ const storeUpdate = function (data: any, type: string) {
 // // https://firebase.google.com/docs/functions/typescript
 //
 export const refreshData = functions.https.onRequest((request, response) => {
-    const url = 'https://www.gov.gg/coronavirus';
+    const url = 'https://www.gov.gg/covid19testresults';
 
     const req = https.get(url, (resp) => {
         let data: string = '';
