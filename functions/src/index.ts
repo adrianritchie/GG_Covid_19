@@ -101,8 +101,7 @@ export const refreshData = functions.region('europe-west2').https.onRequest((req
 
 });
 
-
-export const updateData = functions.region('europe-west2').pubsub.schedule('every 15 minutes').timeZone('europe/london').onRun((context) => {
+export const updateData = functions.region('europe-west2').pubsub.schedule('*/15 * * * *').timeZone('europe/london').onRun((context) => {
 
     const req = https.get(url, (resp) => {
         let data: string = '';
@@ -209,4 +208,3 @@ export const latestData = functions.region('europe-west2').https.onRequest((requ
         response.send(latest);
     }
 });
- 
