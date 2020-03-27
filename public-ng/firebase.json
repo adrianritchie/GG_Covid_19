@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "target": "public-ng",
+      "public": "dist/public-ng",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}

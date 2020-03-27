@@ -10,7 +10,11 @@
     ]
   },
   "hosting": {
-    "public": "public",
+    "predeploy": [
+      "cd public-ng; ng lint",
+      "cd public-ng; ng build --prod"
+    ],
+    "public": "public-ng/dist/public-ng",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -19,11 +23,6 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
-      },
-      {
-        // Excludes specified pathways from rewrites
-        "source": "!/@(js|css)/**",
         "destination": "/index.html"
       }
     ]

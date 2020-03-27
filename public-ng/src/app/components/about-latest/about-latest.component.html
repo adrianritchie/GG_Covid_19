@@ -1,0 +1,28 @@
+        <!-- About data -->
+        <div class="row">
+          <div class="col">
+            <div class="card">
+              <div *ngIf="loading" class="overlay dark ggLoading">
+                <i class="fas fa-3x fa-sync-alt"></i>
+              </div>
+              <div class="card-header">
+                <h3 class="card-title">About The Data</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                    <i class="fas fa-minus"></i></button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
+                    The coronavirus page on Gov.gg was last updated <strong>{{ lastUpdated }}</strong>. The data on this page is cached for 30 minutes and will next refresh <strong>{{ cacheUntil }}</strong>.
+                  </div>
+                  <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
+                    <a href="https://gov.gg/selfisolate" class="btn btn-lg btn-danger btn-block" target="_blank">Should I self-isolate?</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>

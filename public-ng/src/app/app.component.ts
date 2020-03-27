@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AngularFireAnalytics } from '@angular/fire/analytics';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.sass']
 })
 export class AppComponent {
-  title = 'public-ng';
+  constructor(private analytics: AngularFireAnalytics) {
+  }
+
+  openingModal(modal) {
+    this.analytics.logEvent(`${modal}_modal_shown`);
+  }
 }

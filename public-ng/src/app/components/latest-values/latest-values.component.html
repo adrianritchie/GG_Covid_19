@@ -1,0 +1,79 @@
+<!-- Current figures -->
+<div class="d-flex flex-column flex-md-row currentNumbers pt-3">
+  <div class="flex-fill py-sm-0 pr-md-2">
+    <div class="small-box bg-info">
+      <div *ngIf="loading" class="overlay dark ggLoading">
+        <i class="fas fa-3x fa-sync-alt"></i>
+      </div>
+      <div class="inner">
+        <h3 id="currentTotal">{{ loading ? '-' : tested }}</h3>
+        <p>Total tested</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-vial"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-fill py-sm-0 px-md-2">
+    <div class="small-box bg-warning">
+      <div *ngIf="loading" class="overlay dark ggLoading">
+        <i class="fas fa-3x fa-sync-alt"></i>
+      </div>
+      <div class="inner">
+        <h3 id="currentAwaiting">{{ loading ? '-' : pending }}</h3>
+        <p>Awaiting results</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-hourglass-half"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-fill py-sm-0 px-md-2">
+    <div class="small-box bg-success">
+      <div *ngIf="loading" class="overlay dark ggLoading">
+        <i class="fas fa-3x fa-sync-alt"></i>
+      </div>
+      <div class="inner">
+        <h3 id="currentNegative">{{ loading ? '-' : negative }}</h3>
+        <p>Negative results</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-heart"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-fill py-sm-0 pl-md-2">
+    <!-- <div class="flex-fill px-md-2"> -->
+    <div class="small-box bg-danger">
+      <div *ngIf="loading" class="overlay dark ggLoading">
+        <i class="fas fa-3x fa-sync-alt"></i>
+      </div>
+      <div class="inner">
+        <h3 id="currentPositive">{{ loading ? '-' : positive }}</h3>
+        <p>Positive results</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-biohazard"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="flex-fill pl-md-2">
+            <div class="small-box bg-secondary">
+              <div class="overlay dark ggLoading">
+                <i class="fas fa-3x fa-sync-alt"></i>
+              </div>
+              <div class="inner">
+                <h3 id="currentPositive">-</h3>
+                <p>Reported deaths</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-skull-crossbones"></i>
+              </div>
+            </div>
+          </div> -->
+</div>
+<!-- ./current-figures-->

@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "gg-covid-19": {
+      "hosting": {
+        "public-ng": [
+          "gg-covid-19"
+        ]
+      }
+    }
+  }
+}
