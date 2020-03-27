@@ -373,6 +373,9 @@
           $('#modal-about').on('shown.bs.modal', function (e) {
             firebase.analytics().logEvent('about_modal_shown');
           });
+          $('#modal-api').on('shown.bs.modal', function (e) {
+            firebase.analytics().logEvent('api_modal_shown');
+          });
           $('a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
             firebase.analytics().logEvent('switch_chart', { 'chart' : e.target });
             window.dispatchEvent(new Event('resize'));
