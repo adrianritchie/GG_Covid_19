@@ -46,6 +46,11 @@
           </a>
 
           <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+            <li class="nav-item mr-1">
+              <button type="button" class="btn btn-block btn-outline-secondary" data-toggle="modal" data-target="#modal-api">
+                API
+              </button>
+            </li>
             <li class="nav-item">
               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-about">
                 About
@@ -232,7 +237,7 @@
     <!-- ./wrapper -->
 
     <div class="modal fade" id="modal-about" style="display: none;" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">About This Site</h4>
@@ -243,6 +248,104 @@
           <div class="modal-body">
             <p>This site has been created and is maintained by Adrian Ritchie.  For enquiries about the site, please email: <a href="mailto:ar@kodo.gg?subject=Guernsey%20Covid-19%20Tracker">ar@kodo.gg</a>.</p>
             <p>The source code for the site is available on <a href="https://github.com/adrianritchie/GG_Covid_19" target="_blank">GitHub <i class="fab fa-github"></i></a>.  If you are able to, please submit a pull-request for any enhancements to make this site better.</p>
+            <p>The data on this site has been obtained from the <a href="https://gov.gg" target="_blank">Gov.gg</a> website and is there covered by their <a href="https://gov.gg/TsCs" target="_blank">Terms and Conditions</a>.  In particular, this use of the data from the Covid-19 Test Results page is covered under the following:</p>
+            <div class="callout callout-success">
+              <h5>Using  <a href="https://gov.gg" target="_blank">www.gov.gg</a> content</h5>
+              <p>The material on this site is subject to copyright protection in respect of the States of Guernsey unless otherwise indicated.</p>
+              <p>Copyright protected material may be reproduced free of charge in any format or medium for research, private study or for internal circulation within an organisation. This is subject to the material being reproduced accurately and not being used in a misleading context. Where any of the copyright items on this site are being republished or copied to others, the source of the material must be identified and the copyright status acknowledged.
+              <p>The permission to reproduce protected material does not extend to any material on this site for which the copyright is identified as being held by a third party. For authorisation to reproduce such material, you must contact the copyright holder.</p>
+              <p>We make States of Guernsey information available through feeds to third parties for use on websites or other applications. Please be aware, however, that these are not States of Guernsey products. These applications may use versions of our information and guidance that has been edited or cached. The most up-to-date version of our information will always be that available on the <a href="https://gov.gg" target="_blank">GOV.GG</a> website. The States of Guernsey does not provide any guarantees, conditions or warranties as to the accuracy of any such third-party products and does not accept liability for loss or damage incurred by users of such third-party products under any circumstances.</p>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+    <div class="modal fade" id="modal-api" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Data API</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Please be aware that the data available on this site and through these APIs are covered by the <a href="https://gov.gg/TsCs" target="_blank">Gov.gg Terms and Conditions</a>.  More information can be foudn on their site or in the About section of this website.</p>
+            <div class="callout callout-danger bg-light color-palette">
+              <h5><i class="icon fas fa-exclamation-triangle"></i> Data Structure</h5>
+              The structure of the data in the APIs below is driven by the structure of the information on the gov.gg COVID-19 Coronavirus - Testing results page.  If the that page changes, I may need to make changes to the data strutures of the API.
+            </div>
+            <div class="accordion" id="accordionApi">
+              <div class="card">
+                <div class="card-header" id="headingAllData">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseAllData" aria-expanded="true" aria-controls="collapseAllData">
+                      <h5>All Data</h5>
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseAllData" class="collapse" aria-labelledby="headingAllData" data-parent="#accordionApi">
+                  <div class="card-body">
+                    <dl>
+                      <dt>Url</dt><dd><a href="http://europe-west2-gg-covid-19.cloudfunctions.net/graphData" _target="blank">http://europe-west2-gg-covid-19.cloudfunctions.net/graphData</a></dd>
+                      <dt>Example</dt><dd class="bg-light color-palette"><pre><code>{
+  "cacheUntil": "2020-03-27T09:33:01.474Z",
+  "Awaiting results": [ 61, 61, ... ],
+  "Negative results": [ 352, 352, ... ],
+  "Saved": [ "2020-03-26T17:15:24.632Z", "2020-03-26T17:09:55.327Z", ... ],
+  "Number of samples tested": [ 447, 447, ... ],
+  "Positive results": [ 34, 34, ... ],
+  "Updated": [ "2020-03-26T17:12:15+00:00", "2020-03-26T17:08:08+00:00", ... ]
+}</code></pre></dd>
+                      <dt>cacheUntil</dt><dd>This is the time that the data cached on the server will refresh after.  Calling the API again before this time will return the same dataset.</dd>
+                      <dt>Saved</dt><dd>This is time that the data values were captured by this site.</dd>
+                      <dt>Other arrays</dt><dd>These are the values that have been captured from the gov.gg website.  The most recent being the first items in the array.  Items in each array with the same index were collected together.</dd>
+                    </dl>
+                    <div class="alert alert-warning disabled" role="alert">
+                      The data in this set is captured everytime there is an update to the page, regardless of whether the numbers have changed or not.  Therefore, there may be multiple sets of data that are identical except the Updated and Saved times.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingLatestData">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseLatestData" aria-expanded="true" aria-controls="collapseLatestData">
+                      <h5>Latest Data</h5>
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseLatestData" class="collapse" aria-labelledby="headingLatestData" data-parent="#accordionApi">
+                  <div class="card-body">
+                    <dl>
+                      <dt>Url</dt><dd><a href="http://europe-west2-gg-covid-19.cloudfunctions.net/latestData" _target="blank">http://europe-west2-gg-covid-19.cloudfunctions.net/latestData</a></dd>
+                      <dt>Example</dt><dd class="bg-light color-palette"><pre><code>{
+  "Positive results": 34,
+  "Updated": "2020-03-26T17:12:15+00:00",
+  "Awaiting results": 61,
+  "Negative results": 352,
+  "Saved": "2020-03-26T17:15:24.632Z",
+  "Number of samples tested": 447,
+  "cacheUntil": "2020-03-27T10:28:02.863Z"
+}</code></pre></dd>
+                      <dt>cacheUntil</dt><dd>This is the time that the data cached on the server will refresh after.  Calling the API again before this time will return the same dataset.</dd>
+                      <dt>Saved</dt><dd>This is time that the data values were captured by this site.</dd>
+                      <dt>Updated</dt><dd>This is updated time from the page metadata of when the page was actually updated.</dd>
+                      <dt>Other values</dt><dd>These are the values captured from the gov.gg web page.</dd>
+                    </dl>
+                    <div class="alert alert-warning disabled" role="alert">
+                      Two calls to this API may result in different Updated times but the values remain the same.  This data updates when the gov.gg page is chnage, regardless of whether the values change or not.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="modal-footer justify-content-between">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
