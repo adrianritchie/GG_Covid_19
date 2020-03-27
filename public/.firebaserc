@@ -2,7 +2,7 @@
   "targets": {
     "gg-covid-19": {
       "hosting": {
-        "public-ng": [
+        "public": [
           "gg-covid-19"
         ]
       }

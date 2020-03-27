@@ -1,8 +1,8 @@
 {
   "hosting": [
     {
-      "target": "public-ng",
-      "public": "dist/public-ng",
+      "target": "public",
+      "public": "dist/out",
       "ignore": [
         "firebase.json",
         "**/.*",

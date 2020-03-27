@@ -11,10 +11,10 @@
   },
   "hosting": {
     "predeploy": [
-      "cd public-ng; ng lint",
-      "cd public-ng; ng build --prod"
+      "cd public; ng lint",
+      "cd public; ng build --prod"
     ],
-    "public": "public-ng/dist/public-ng",
+    "public": "public/dist/out",
     "ignore": [
       "firebase.json",
       "**/.*",
