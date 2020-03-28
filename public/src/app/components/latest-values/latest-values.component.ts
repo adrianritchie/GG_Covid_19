@@ -8,6 +8,7 @@ import { LatestDataService } from 'src/app/services/latest-data.service';
 })
 export class LatestValuesComponent implements OnInit {
 
+  awaiting: number;
   tested: number;
   pending: number;
   negative: number;
@@ -20,6 +21,7 @@ export class LatestValuesComponent implements OnInit {
   ngOnInit(): void {
     this.latestData.getData().subscribe(
       (data) => {
+        this.awaiting = data['Awaiting Testing'];
         this.tested = data['Number of samples tested'];
         this.pending = data['Awaiting results'];
         this.negative = data['Negative results'];
