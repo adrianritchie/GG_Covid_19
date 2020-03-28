@@ -1,40 +1,5 @@
 <div class="wrapper">
-  <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
-    <div class="container">
-      <a href="index.html" class="navbar-brand">
-        <span class="brand-text font-weight-light"
-          >Guernsey Covid-19 Tracker</span
-        >
-      </a>
-
-      <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
-        <li class="nav-item mr-1">
-          <button
-            type="button"
-            class="btn btn-block btn-outline-secondary"
-            data-toggle="modal"
-            data-target="#modal-api"
-            (click)="openingModal('api')"
-          >
-            API
-          </button>
-        </li>
-        <li class="nav-item">
-          <button
-            type="button"
-            class="btn btn-primary"
-            data-toggle="modal"
-            data-target="#modal-about"
-            (click)="openingModal('about')"
-          >
-            About
-          </button>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <!-- /.navbar -->
+  <app-navbar></app-navbar>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">

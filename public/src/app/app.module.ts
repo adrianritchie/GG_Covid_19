@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
+import { AngularFireAuthModule } from '@angular/fire/auth';
 import { environment } from '../environments/environment';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -17,6 +18,7 @@ import { AggregateChartComponent } from './components/charts/aggregate-chart/agg
 import { ChangesChartComponent } from './components/charts/changes-chart/changes-chart.component';
 
 import { PlotlyViaCDNModule } from 'angular-plotly.js';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 PlotlyViaCDNModule.plotlyVersion = 'latest'; // can be `latest` or any version number (i.e.: '1.40.0')
 PlotlyViaCDNModule.plotlyBundle = 'basic'; // optional: can be null (for full) or 'basic', 'cartesian',
@@ -31,7 +33,8 @@ PlotlyViaCDNModule.plotlyBundle = 'basic'; // optional: can be null (for full) o
     AboutModalComponent,
     ChartsLayoutComponent,
     AggregateChartComponent,
-    ChangesChartComponent
+    ChangesChartComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +42,8 @@ PlotlyViaCDNModule.plotlyBundle = 'basic'; // optional: can be null (for full) o
     HttpClientModule,
     PlotlyViaCDNModule,
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFireAnalyticsModule
+    AngularFireAnalyticsModule,
+    AngularFireAuthModule
   ],
   providers: [],
   bootstrap: [AppComponent]
