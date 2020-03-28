@@ -15,7 +15,8 @@ export const environment = {
     'Positive results': 'rgb(214, 39, 40)',
     'Awaiting results': 'rgb(255, 127, 14)',
     'Negative results': 'rgb(44, 160, 44)',
-    'Number of samples tested': 'rgb(31, 119, 180)'
+    'Number of samples tested': 'rgb(31, 119, 180)',
+    'Awaiting Testing': '#605ca8'
   },
 
   firebase: {

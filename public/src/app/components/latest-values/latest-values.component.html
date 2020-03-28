@@ -1,6 +1,21 @@
 <!-- Current figures -->
 <div class="d-flex flex-column flex-md-row currentNumbers pt-3">
   <div class="flex-fill py-sm-0 pr-md-2">
+    <div class="small-box bg-purple">
+      <div *ngIf="loading" class="overlay dark ggLoading">
+        <i class="fas fa-3x fa-sync-alt"></i>
+      </div>
+      <div class="inner">
+        <h3 id="currentTotal">{{ loading ? '-' : awaiting }}</h3>
+        <p>Awaiting testing</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-clock"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-fill py-sm-0 px-md-2">
     <div class="small-box bg-info">
       <div *ngIf="loading" class="overlay dark ggLoading">
         <i class="fas fa-3x fa-sync-alt"></i>
