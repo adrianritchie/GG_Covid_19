@@ -3,16 +3,51 @@ import * as admin from 'firebase-admin';
 import * as https from 'https';
 import * as cheerio from 'cheerio';
 import * as moment from 'moment';
+import * as sgMail from '@sendgrid/mail';
+
 
 admin.initializeApp();
 const db = admin.firestore();
 
 const url = 'https://www.gov.gg/covid19testresults';
+const sg_api_key = functions.config().sendgrid.api;
+const sg_update_id = functions.config().sendgrid.update;
+sgMail.setApiKey(sg_api_key);
 
 let results: any;
 let lastGrabbed: any = null;
 
 let latest: any;
+
+const sendNotifications = async function (data: any, nextPageToken?: string) {
+    
+    console.log("sendNotifications");
+
+    const msg = {
+        to: new Array<string>(),
+        from: "ar@kodo.gg",
+        templateId: sg_update_id,
+        dynamic_template_data: data
+    };
+
+    // List batch of users, 1000 at a time.
+    const userList = await admin.auth().listUsers(1000, nextPageToken);
+
+    userList.users.forEach(userRecord => {
+        if (userRecord.emailVerified && userRecord.email) {
+            msg.to.push(userRecord.email);
+        }
+    });
+
+    sgMail.send(msg)
+        .then(resp => console.log(resp))
+        .catch(err => console.log(err));
+
+    if (userList.pageToken) {
+        // List next batch of users.
+        await sendNotifications(data, userList.pageToken);
+    }
+}
 
 const storeUpdate = function (data: any, type: string) {
     if (lastGrabbed < new Date(data['Updated'])) {
@@ -28,18 +63,12 @@ const storeUpdate = function (data: any, type: string) {
             }
         }
 
-        db.collection('tracking').add(data).catch((err) => { console.log("Error: " + err.message); });
-        db.collection('web_hooks').limit(1).get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(documentSnapshot => {
-                    for (const webHook of documentSnapshot.get('urls')) {
-                        console.log("Webhook url: " + webHook);
-                        https.get(webHook);
-                    }
-                });
-            })
-            .catch((err) => { console.log("Error: " + err.message); });
+        latest = data;
+        latest['cacheUntil'] = moment().add(30, 'm');
 
+        db.collection('tracking').add(data).catch((err) => { console.log("Error: " + err.message); });
+
+        sendNotifications(data).catch(err => console.log(err));
         lastGrabbed = new Date(data['Updated']);
         return data;
     }
@@ -157,6 +186,8 @@ export const graphData = functions.region('europe-west2').https.onRequest((reque
 
     if (!!request.query.clearResults) {
         results = null;
+        response.send('Graph data cleared');
+        return;
     }
 
     if (!results || results.cacheUntil < moment()) {
@@ -173,10 +204,10 @@ export const graphData = functions.region('europe-west2').https.onRequest((reque
                 }
             });
         })
-        .then(() => {
-            response.send(results);
-        })
-        .catch(err => response.send(err));
+            .then(() => {
+                response.send(results);
+            })
+            .catch(err => response.send(err));
     }
     else {
         response.send(results);
@@ -188,21 +219,23 @@ export const latestData = functions.region('europe-west2').https.onRequest((requ
 
     if (!!request.query.clearResults) {
         latest = null;
+        response.send('Graph data cleared');
+        return;
     }
 
     if (!latest || latest.cacheUntil < moment()) {
         db.collection('tracking')
-        .orderBy('Updated', 'desc').limit(1).get()
-        .then(querySnapshot => {
-            querySnapshot.forEach(documentSnapshot => {
-                latest = documentSnapshot.data();
-                latest['cacheUntil'] = moment().add(30, 'm');
-            });
-        })
-        .then(() => {
-            response.send(latest);
-        })
-        .catch(err => response.send(err));
+            .orderBy('Updated', 'desc').limit(1).get()
+            .then(querySnapshot => {
+                querySnapshot.forEach(documentSnapshot => {
+                    latest = documentSnapshot.data();
+                    latest['cacheUntil'] = moment().add(30, 'm');
+                });
+            })
+            .then(() => {
+                response.send(latest);
+            })
+            .catch(err => response.send(err));
     }
     else {
         response.send(latest);
