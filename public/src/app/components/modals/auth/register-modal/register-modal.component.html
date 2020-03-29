@@ -1,0 +1,97 @@
+<div class="modal fade" data-backdrop="false" id="modal-register" style="display: none;" aria-hidden="true" (click)="resetForm($event.target.id === 'modal-register')">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Register</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="resetForm(true)">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body" *ngIf="!registered">
+        <p>Registering for notifications means we can let you know when the numbers are updated.</p>
+        <form [formGroup]="loginForm">
+          <div class="input-group mb-3">
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Email"
+              formControlName="email"
+              [class.is-invalid]="email.invalid && email.touched"
+            />
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-envelope"></span>
+              </div>
+            </div><span id="password-error" *ngIf="email.invalid && email.touched" class="error invalid-feedback">Your email address is invalid.</span>
+          </div>
+          <div class="input-group mb-3">
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              formControlName="password"
+              [class.is-invalid]="password.invalid && password.touched"
+            />
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+            <span id="password-error" *ngIf="password.invalid && password.touched" class="error invalid-feedback">Your password must be at least 8 characters long and contain a letter and a number</span>
+          </div>
+          <div class="input-group mb-3">
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Retype password"
+              formControlName="passwordRepeat"
+              [class.is-invalid]="passwordRepeat.invalid && passwordRepeat.touched"
+            />
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+            <span id="password-repeat-error" *ngIf="passwordRepeat.invalid && passwordRepeat.touched" class="error invalid-feedback">This value doesn't match the password above.</span>
+          </div>
+          <div class="input-group mb-0">
+            <div class="custom-control custom-checkbox">
+              <input
+                type="checkbox"
+                name="agree"
+                class="custom-control-input"
+                id="agree"
+                formControlName="agree"
+                [class.is-invalid]="agree.invalid && agree.touched"
+              />
+              <label class="custom-control-label" for="agree">
+                I agree to the use of my email address for notifications.
+              </label>
+            </div>
+            <span
+              *ngIf="agree.invalid && agree.touched"
+              id="agree-error"
+              class="error invalid-feedback"
+              style="display: inline;"
+            >
+              Please agree to the use of your email address.
+            </span>
+          </div>
+        </form>
+      </div>
+      <div class="modal-body" *ngIf="registered">
+        <p>Thank you for registering, you will get a notification when the numbers change!</p>
+        <p>An email has been sent to you confirm your address. You must click the verification link before we can send you notification emails.</p>
+      </div>
+      <div class="modal-footer justify-content-start">
+        <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid && !(saving || registered)" (click)="register()">Register</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="resetForm(true)">
+          Close
+        </button>
+        <span class="text-danger" *ngIf="failed">Registration failed</span>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>

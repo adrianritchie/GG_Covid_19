@@ -18,14 +18,25 @@ export class AuthService {
   async googleSignIn() {
     const provider = new auth.GoogleAuthProvider();
     await this.afAuth.auth.signInWithPopup(provider);
+    if (!this.afAuth.auth.currentUser.emailVerified) {
+      this.afAuth.auth.currentUser.sendEmailVerification();
+    }
   }
 
-  async emailSignIn() {
-    const provider = new auth.EmailAuthProvider();
-    await this.afAuth.auth.signInWithPopup(provider);
+  async emailSignIn(email: string, password: string) {
+    await this.afAuth.auth.signInWithEmailAndPassword(email, password);
+  }
+
+  async registerWithEmail(email: string, password: string) {
+    await this.afAuth.auth.createUserWithEmailAndPassword(email, password);
+    await this.afAuth.auth.currentUser.sendEmailVerification();
   }
 
   async signOut() {
     await this.afAuth.auth.signOut();
+  }
+
+  async unregister() {
+    await this.afAuth.auth.currentUser.delete();
   }
 }

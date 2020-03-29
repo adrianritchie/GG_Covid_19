@@ -1,76 +1,52 @@
-
-<div
-class="modal fade"
-id="modal-api"
-style="display: none;"
-aria-hidden="true"
->
-<div class="modal-dialog modal-xl">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h4 class="modal-title">Data API</h4>
-      <button
-        type="button"
-        class="close"
-        data-dismiss="modal"
-        aria-label="Close"
-      >
-        <span aria-hidden="true">×</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <p>
-        Please be aware that the data available on this site and through these
-        APIs are covered by the
-        <a href="https://gov.gg/TsCs" target="_blank"
-          >Gov.gg Terms and Conditions</a
-        >. More information can be found on their site or in the About section
-        of this website.
-      </p>
-      <div class="callout callout-danger bg-light color-palette">
-        <h5>
-          <i class="icon fas fa-exclamation-triangle"></i> Data Structure
-        </h5>
-        The structure of the data in the APIs below is driven by the structure
-        of the information on the gov.gg COVID-19 Coronavirus - Testing
-        results page. If the that page changes, I may need to make changes to
-        the data strutures of the API.
+<div class="modal fade" data-backdrop="false" id="modal-api" style="display: none;" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Data API</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
       </div>
-      <div class="accordion" id="accordionApi">
-        <div class="card">
-          <div class="card-header" id="headingAllData">
-            <h2 class="mb-0">
-              <button
-                class="btn btn-link"
-                type="button"
-                data-toggle="collapse"
-                data-target="#collapseAllData"
-                aria-expanded="true"
-                aria-controls="collapseAllData"
-              >
-                <h5>All Data</h5>
-              </button>
-            </h2>
-          </div>
-          <div
-            id="collapseAllData"
-            class="collapse"
-            aria-labelledby="headingAllData"
-            data-parent="#accordionApi"
-          >
-            <div class="card-body">
-              <dl>
-                <dt>Url</dt>
-                <dd>
-                  <a
-                    href="https://europe-west2-gg-covid-19.cloudfunctions.net/graphData"
-                    _target="blank"
-                    >https://europe-west2-gg-covid-19.cloudfunctions.net/graphData</a
-                  >
-                </dd>
-                <dt>Example</dt>
-                <dd class="bg-light color-palette">
-                  <pre><code>{{ '{' }}
+      <div class="modal-body">
+        <p>
+          Please be aware that the data available on this site and through these APIs are covered by the
+          <a href="https://gov.gg/TsCs" target="_blank">Gov.gg Terms and Conditions</a>. More information can be found
+          on their site or in the About section of this website.
+        </p>
+        <div class="callout callout-danger bg-light color-palette">
+          <h5><i class="icon fas fa-exclamation-triangle"></i> Data Structure</h5>
+          The structure of the data in the APIs below is driven by the structure of the information on the gov.gg
+          COVID-19 Coronavirus - Testing results page. If the that page changes, I may need to make changes to the data
+          strutures of the API.
+        </div>
+        <div class="accordion" id="accordionApi">
+          <div class="card">
+            <div class="card-header" id="headingAllData">
+              <h2 class="mb-0">
+                <button
+                  class="btn btn-link"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapseAllData"
+                  aria-expanded="true"
+                  aria-controls="collapseAllData"
+                >
+                  <h5>All Data</h5>
+                </button>
+              </h2>
+            </div>
+            <div id="collapseAllData" class="collapse" aria-labelledby="headingAllData" data-parent="#accordionApi">
+              <div class="card-body">
+                <dl>
+                  <dt>Url</dt>
+                  <dd>
+                    <a href="https://europe-west2-gg-covid-19.cloudfunctions.net/graphData" _target="blank"
+                      >https://europe-west2-gg-covid-19.cloudfunctions.net/graphData</a
+                    >
+                  </dd>
+                  <dt>Example</dt>
+                  <dd class="bg-light color-palette">
+                    <pre><code>{{ '{' }}
 "cacheUntil": "2020-03-27T09:33:01.474Z",
 "Awaiting results": [ 61, 61, ... ],
 "Negative results": [ 352, 352, ... ],
@@ -79,69 +55,62 @@ aria-hidden="true"
 "Positive results": [ 34, 34, ... ],
 "Updated": [ "2020-03-26T17:12:15+00:00", "2020-03-26T17:08:08+00:00", ... ]
 {{ '}' }}</code></pre>
-                </dd>
-                <dt>cacheUntil</dt>
-                <dd>
-                  This is the time that the data cached on the server will
-                  refresh after. Calling the API again before this time will
-                  return the same dataset.
-                </dd>
-                <dt>Saved</dt>
-                <dd>
-                  This is time that the data values were captured by this
-                  site.
-                </dd>
-                <dt>Other arrays</dt>
-                <dd>
-                  These are the values that have been captured from the gov.gg
-                  website. The most recent being the first items in the array.
-                  Items in each array with the same index were collected
-                  together.
-                </dd>
-              </dl>
-              <div class="alert alert-warning disabled" role="alert">
-                The data in this set is captured everytime there is an update
-                to the page, regardless of whether the numbers have changed or
-                not. Therefore, there may be multiple sets of data that are
-                identical except the Updated and Saved times.
+                  </dd>
+                  <dt>cacheUntil</dt>
+                  <dd>
+                    This is the time that the data cached on the server will refresh after. Calling the API again before
+                    this time will return the same dataset.
+                  </dd>
+                  <dt>Saved</dt>
+                  <dd>
+                    This is time that the data values were captured by this site.
+                  </dd>
+                  <dt>Other arrays</dt>
+                  <dd>
+                    These are the values that have been captured from the gov.gg website. The most recent being the
+                    first items in the array. Items in each array with the same index were collected together.
+                  </dd>
+                </dl>
+                <div class="alert alert-warning disabled" role="alert">
+                  The data in this set is captured everytime there is an update to the page, regardless of whether the
+                  numbers have changed or not. Therefore, there may be multiple sets of data that are identical except
+                  the Updated and Saved times.
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="headingLatestData">
-            <h2 class="mb-0">
-              <button
-                class="btn btn-link"
-                type="button"
-                data-toggle="collapse"
-                data-target="#collapseLatestData"
-                aria-expanded="true"
-                aria-controls="collapseLatestData"
-              >
-                <h5>Latest Data</h5>
-              </button>
-            </h2>
-          </div>
-          <div
-            id="collapseLatestData"
-            class="collapse"
-            aria-labelledby="headingLatestData"
-            data-parent="#accordionApi"
-          >
-            <div class="card-body">
-              <dl>
-                <dt>Url</dt>
-                <dd>
-                  <a
-                    href="https://europe-west2-gg-covid-19.cloudfunctions.net/latestData"
-                    _target="blank"
-                    >https://europe-west2-gg-covid-19.cloudfunctions.net/latestData</a
-                  >
-                </dd>
-                <dt>Example</dt>
-                <dd class="bg-light color-palette">
-                  <pre><code>{{ '{' }}
+          <div class="card">
+            <div class="card-header" id="headingLatestData">
+              <h2 class="mb-0">
+                <button
+                  class="btn btn-link"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapseLatestData"
+                  aria-expanded="true"
+                  aria-controls="collapseLatestData"
+                >
+                  <h5>Latest Data</h5>
+                </button>
+              </h2>
+            </div>
+            <div
+              id="collapseLatestData"
+              class="collapse"
+              aria-labelledby="headingLatestData"
+              data-parent="#accordionApi"
+            >
+              <div class="card-body">
+                <dl>
+                  <dt>Url</dt>
+                  <dd>
+                    <a href="https://europe-west2-gg-covid-19.cloudfunctions.net/latestData" _target="blank"
+                      >https://europe-west2-gg-covid-19.cloudfunctions.net/latestData</a
+                    >
+                  </dd>
+                  <dt>Example</dt>
+                  <dd class="bg-light color-palette">
+                    <pre><code>{{ '{' }}
 "Positive results": 34,
 "Updated": "2020-03-26T17:12:15+00:00",
 "Awaiting results": 61,
@@ -150,47 +119,42 @@ aria-hidden="true"
 "Number of samples tested": 447,
 "cacheUntil": "2020-03-27T10:28:02.863Z"
 {{ '}' }}</code></pre>
-                </dd>
+                  </dd>
 
-                <dt>cacheUntil</dt>
-                <dd>
-                  This is the time that the data cached on the server will
-                  refresh after. Calling the API again before this time will
-                  return the same dataset.
-                </dd>
-                <dt>Saved</dt>
-                <dd>
-                  This is time that the data values were captured by this
-                  site.
-                </dd>
-                <dt>Updated</dt>
-                <dd>
-                  This is updated time from the page metadata of when the page
-                  was actually updated.
-                </dd>
-                <dt>Other values</dt>
-                <dd>
-                  These are the values captured from the gov.gg web page.
-                </dd>
-              </dl>
-              <div class="alert alert-warning disabled" role="alert">
-                Two calls to this API may result in different Updated times
-                but the values remain the same. This data updates when the
-                gov.gg page is chnage, regardless of whether the values change
-                or not.
+                  <dt>cacheUntil</dt>
+                  <dd>
+                    This is the time that the data cached on the server will refresh after. Calling the API again before
+                    this time will return the same dataset.
+                  </dd>
+                  <dt>Saved</dt>
+                  <dd>
+                    This is time that the data values were captured by this site.
+                  </dd>
+                  <dt>Updated</dt>
+                  <dd>
+                    This is updated time from the page metadata of when the page was actually updated.
+                  </dd>
+                  <dt>Other values</dt>
+                  <dd>
+                    These are the values captured from the gov.gg web page.
+                  </dd>
+                </dl>
+                <div class="alert alert-warning disabled" role="alert">
+                  Two calls to this API may result in different Updated times but the values remain the same. This data
+                  updates when the gov.gg page is chnage, regardless of whether the values change or not.
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          Close
+        </button>
+      </div>
     </div>
-    <div class="modal-footer justify-content-between">
-      <button type="button" class="btn btn-default" data-dismiss="modal">
-        Close
-      </button>
-    </div>
+    <!-- /.modal-content -->
   </div>
-  <!-- /.modal-content -->
-</div>
-<!-- /.modal-dialog -->
+  <!-- /.modal-dialog -->
 </div>

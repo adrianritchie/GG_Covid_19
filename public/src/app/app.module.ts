@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
@@ -19,6 +20,9 @@ import { ChangesChartComponent } from './components/charts/changes-chart/changes
 
 import { PlotlyViaCDNModule } from 'angular-plotly.js';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { RegisterModalComponent } from './components/modals/auth/register-modal/register-modal.component';
+import { LoginModalComponent } from './components/modals/auth/login-modal/login-modal.component';
+import { CancelModalComponent } from './components/modals/auth/cancel-modal/cancel-modal.component';
 
 PlotlyViaCDNModule.plotlyVersion = 'latest'; // can be `latest` or any version number (i.e.: '1.40.0')
 PlotlyViaCDNModule.plotlyBundle = 'basic'; // optional: can be null (for full) or 'basic', 'cartesian',
@@ -34,12 +38,16 @@ PlotlyViaCDNModule.plotlyBundle = 'basic'; // optional: can be null (for full) o
     ChartsLayoutComponent,
     AggregateChartComponent,
     ChangesChartComponent,
-    NavbarComponent
+    NavbarComponent,
+    RegisterModalComponent,
+    LoginModalComponent,
+    CancelModalComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    ReactiveFormsModule,
     PlotlyViaCDNModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAnalyticsModule,
