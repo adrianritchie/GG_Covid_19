@@ -16,6 +16,7 @@ export const environment = {
     'Awaiting results': 'rgb(255, 127, 14)',
     'Negative results': 'rgb(44, 160, 44)',
     'Number of samples tested': 'rgb(31, 119, 180)',
+    'Number of deaths': 'rgb(0, 0, 0)',
     'Awaiting Testing': '#605ca8'
   },
 

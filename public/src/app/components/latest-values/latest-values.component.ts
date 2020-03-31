@@ -13,6 +13,7 @@ export class LatestValuesComponent implements OnInit {
   pending: number;
   negative: number;
   positive: number;
+  deaths: number;
 
   loading = true;
 
@@ -26,6 +27,7 @@ export class LatestValuesComponent implements OnInit {
         this.pending = data['Awaiting results'];
         this.negative = data['Negative results'];
         this.positive = data['Positive results'];
+        this.deaths = data['Number of deaths'];
         this.loading = false;
       }
     );

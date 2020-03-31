@@ -1,0 +1,56 @@
+<!-- Navbar -->
+<nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
+  <div class="container">
+    <a href="index.html" class="navbar-brand">
+      <span class="brand-text font-weight-light">Guernsey Covid-19 Tracker</span>
+    </a>
+
+    <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+
+      <li class="nav-item dropdown">
+        <a
+          id="dropdownSubMenu1"
+          href="#"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+          class="nav-link dropdown-toggle"
+        >
+          {{ (auth.user$ | async)?.email || "Notify Me" }}
+        </a>
+        <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
+          <li *ngIf="(auth.user$ | async) === null">
+            <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modal-register">Register</a>
+          </li>
+          <li *ngIf="(auth.user$ | async) === null">
+            <a href="#" class="dropdown-item" data-toggle="modal" data-target="#modal-login">Sign in with Email</a>
+          </li>
+          <li *ngIf="(auth.user$ | async) === null">
+            <a href="#" class="dropdown-item" (click)="auth.googleSignIn()">Sign in with Google</a>
+          </li>
+          <li *ngIf="auth.user$ | async" data-toggle="modal" data-target="#modal-cancel">
+            <a href="#" class="dropdown-item">Stop notifications</a>
+          </li>
+          <li *ngIf="(auth.user$ | async)">
+            <a href="#" class="dropdown-item" (click)="auth.signOut()">Sign out</a>
+          </li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-toggle="modal" data-target="#modal-about" (click)="openingModal('about')">
+          About
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-toggle="modal" data-target="#modal-api" (click)="openingModal('api')">
+          API
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<!-- /.navbar -->
+
+<app-register-modal></app-register-modal>
+<app-login-modal *ngIf="(auth.user$ | async) === null"></app-login-modal>
+<app-cancel-modal *ngIf="auth.user$ | async"></app-cancel-modal>
