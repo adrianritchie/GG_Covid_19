@@ -39,9 +39,7 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
         }
     });
 
-    sgMail.send(msg)
-        .then(resp => console.log(resp))
-        .catch(err => console.log(err));
+    await sgMail.sendMultiple(msg);
 
     if (userList.pageToken) {
         // List next batch of users.
@@ -51,6 +49,8 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
 
 const storeUpdate = function (data: any, type: string) {
     if (lastGrabbed < new Date(data['Updated'])) {
+
+        db.collection('tracking').add(data).catch((err) => { console.log("Error: " + err.message); });
 
         if (!!results) {
             results.cacheUntil = moment().add(30, 'm');
@@ -63,10 +63,12 @@ const storeUpdate = function (data: any, type: string) {
             }
         }
 
-        latest = data;
+        latest = {};
+        for (const key in data) {
+            latest[key].push(data[key]);
+        }
         latest['cacheUntil'] = moment().add(30, 'm');
 
-        db.collection('tracking').add(data).catch((err) => { console.log("Error: " + err.message); });
 
         sendNotifications(data).catch(err => console.log(err));
         lastGrabbed = new Date(data['Updated']);
@@ -181,29 +183,35 @@ export const updateData = functions.region('europe-west2').pubsub.schedule('*/15
 
 });
 
-export const graphData = functions.region('europe-west2').https.onRequest((request, response) => {
+export const graphData = functions.region('europe-west2').runWith({ memory: '512MB'}).https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*');
 
     if (!!request.query.clearResults) {
         results = null;
-        response.send('Graph data cleared');
-        return;
+        // response.send('Graph data cleared');
+        // return;
     }
+
+    const exclude = ['Awaiting Testing'];
 
     if (!results || results.cacheUntil < moment()) {
         results = { cacheUntil: moment().add(30, 'm') };
 
-        db.collection('tracking').orderBy('Updated', 'desc').get().then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-                const data = doc.data();
-                for (const key in data) {
-                    if (!results.hasOwnProperty(key)) {
-                        results[key] = [];
+        db.collection('tracking').orderBy('Updated', 'desc').limit(100).get()
+            .then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    for (const key in data) {
+                        if (exclude.indexOf(key) !== -1) {
+                            continue;
+                        }
+                        if (!results.hasOwnProperty(key)) {
+                            results[key] = [];
+                        }
+                        results[key].push(data[key]);
                     }
-                    results[key].push(data[key]);
-                }
-            });
-        })
+                });
+            })
             .then(() => {
                 response.send(results);
             })
@@ -217,18 +225,16 @@ export const graphData = functions.region('europe-west2').https.onRequest((reque
 export const latestData = functions.region('europe-west2').https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*');
 
-    if (!!request.query.clearResults) {
-        latest = null;
-        response.send('Graph data cleared');
-        return;
-    }
-
-    if (!latest || latest.cacheUntil < moment()) {
+    if (!latest || latest?.cacheUntil < moment() || !!request.query.clearResults) {
         db.collection('tracking')
             .orderBy('Updated', 'desc').limit(1).get()
             .then(querySnapshot => {
                 querySnapshot.forEach(documentSnapshot => {
-                    latest = documentSnapshot.data();
+                    const data = documentSnapshot.data();
+                    latest = {};
+                    for (const key in data) {
+                        latest[key] = data[key];
+                    }
                     latest['cacheUntil'] = moment().add(30, 'm');
                 });
             })
