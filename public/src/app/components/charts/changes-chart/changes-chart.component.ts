@@ -17,7 +17,18 @@ export class ChangesChartComponent implements OnInit {
   constructor(private graphData: GraphDataService) { }
 
   ngOnInit(): void {
-    this.plotly = environment.plotly;
+    this.plotly = {
+      layout: {
+        margin: { t: 15, b: 30 },
+        width: '100%',
+        autosize: true,
+        showlegend: true,
+        legend: { x: 0.05, y: 1 },
+        xaxis: { showgrid: true }
+      },
+      config: { scrollZoom: true, responsive: true },
+      style: { height: '600px', width: '100%' },
+    };
 
     this.graphData.getData().subscribe(data => {
       this.plotData = this.prepareGraphData(data);

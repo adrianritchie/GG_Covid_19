@@ -1,3 +1,25 @@
+<div class="row">
+  <div class="col-6">
+    <button
+      (click)="linearGraph()"
+      class="btn btn-block"
+      [class.btn-success]="chartType === 'linear'"
+      [class.btn-default]="chartType !== 'linear'"
+    >
+      Linear Chart
+    </button>
+  </div>
+  <div class="col-6">
+    <button
+      (click)="logGraph()"
+      class=" btn btn-block"
+      [class.btn-success]="chartType === 'log'"
+      [class.btn-default]="chartType !== 'log'"
+    >
+      Log Chart
+    </button>
+  </div>
+</div>
 <plotly-plot
   [className]="'col-12'"
   [style]="plotly.style"

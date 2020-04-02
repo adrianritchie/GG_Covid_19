@@ -5,12 +5,6 @@
 export const environment = {
   production: false,
 
-  plotly: {
-    layout: { margin: { t: 15, b: 30 }, width: '100%', autosize: true, xaxis: { showgrid: true } },
-    config: { scrollZoom: true, responsive: true },
-    style: { height: '600px', width: '100%' },
-  },
-
   colours: {
     'Positive results': 'rgb(214, 39, 40)',
     'Awaiting results': 'rgb(255, 127, 14)',
