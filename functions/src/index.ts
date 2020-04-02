@@ -14,10 +14,13 @@ const sg_api_key = functions.config().sendgrid.api;
 const sg_update_id = functions.config().sendgrid.update;
 sgMail.setApiKey(sg_api_key);
 
-let results: any;
-let lastGrabbed: any = null;
-
-let latest: any;
+const aggregate_map = {
+    'Awaiting results': 'awaiting_results',
+    'Negative results': 'negative',
+    'Number of deaths': 'deaths',
+    'Number of samples tested': 'tested',
+    'Positive results': 'positive'
+};
 
 const sendNotifications = async function (data: any, nextPageToken?: string) {
     
