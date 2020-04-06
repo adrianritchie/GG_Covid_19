@@ -19,12 +19,15 @@ sgMail.setApiKey(sg_api_key);
 
 const graphDataUrl = 'https://europe-west2-gg-covid-19.cloudfunctions.net/graphData?clearResults=true';
 const latestDataUrl = 'https://europe-west2-gg-covid-19.cloudfunctions.net/latestData?clearResults=true';
-const aggregate_map = {
+
+const aggregate_map : { [id: string] : string; } = {
     'Awaiting results': 'awaiting_results',
     'Negative results': 'negative',
     'Number of deaths': 'deaths',
     'Number of samples tested': 'tested',
-    'Positive results': 'positive'
+    'Positive results': 'positive',
+    'Awaiting Testing': 'awaiting_testing',
+    'Number Recovered': 'recovered'
 };
 
 const translate: any = {
@@ -35,6 +38,10 @@ const translate: any = {
     "Positive results": "Positive results",
     "Number recovered": "Number Recovered"
 }
+
+let results: any;
+let latest: any;
+
 const sendNotifications = async function (data: any, nextPageToken?: string) {
 
     console.log(`sendNotifications: ${nextPageToken}`);
@@ -236,4 +243,77 @@ export const latestData = functions.region('europe-west2').https.onRequest((requ
     else {
         response.send(latest);
     }
+});
+
+export const updateAggregateData = functions.region('europe-west2').firestore.document('tracking/{trackingId}').onCreate((snap, context) => {
+    
+    db.collection('graph_data').doc('aggregate').get().then(v => {
+        const data : any = v.data();
+        const record: any = snap.data();
+        const updated = admin.firestore.Timestamp.fromDate(new Date(Date.parse(record.Updated)));
+        for (const key in record) {
+            const aggregate_key = aggregate_map[key];
+            const value = record[key];
+
+            if (!!aggregate_key && (data[aggregate_key].y.length === 0 || data[aggregate_key].y.slice(-1)[0] !==  value)){
+                data[aggregate_key].y.push(value);
+                data[aggregate_key].x.push(updated);
+                console.log(`${aggregate_key} updated from ${context.params.trackingId}`)
+            }
+        }
+
+        db.collection('graph_data').doc('aggregate').set(data).catch(err => console.log(err));
+
+    }).catch(err => console.log(err));
+});
+
+export const rebuildAggregateData = functions.region('europe-west2').https.onRequest((request, response) => {
+
+    let data : any = {};
+    response.set('Access-Control-Allow-Origin', '*');
+
+    db.collection('graph_data').doc('aggregate').get().then(v => {
+        data = v.data();
+        
+        data.awaiting_results.x = [];
+        data.awaiting_results.y = [];
+        data.negative.x = [];
+        data.negative.y = [];
+        data.deaths.x = [];
+        data.deaths.y = [];
+        data.tested.x = [];
+        data.tested.y = [];
+        data.positive.x = [];
+        data.positive.y = [];
+        data.awaiting_testing.x = [];
+        data.awaiting_testing.y = [];
+        data.recovered.x = [];
+        data.recovered.y = [];
+    
+        db.collection('tracking')
+        .orderBy('Updated', 'asc').get()
+        .then(querySnapshot => {
+            querySnapshot.forEach(documentSnapshot => {
+
+                const record: any = documentSnapshot.data();
+                const updated = new Date(Date.parse(record.Updated));
+                for (const key in record) {
+                    const aggregate_key = aggregate_map[key];
+                    const value = record[key];
+
+                    if (!!aggregate_key && (data[aggregate_key].y.length === 0 || data[aggregate_key].y.slice(-1)[0] !==  value)){
+                        data[aggregate_key].y.push(value);
+                        data[aggregate_key].x.push(updated)
+                    }
+                }
+            });
+        })
+        .then(() => {
+            db.collection('graph_data').doc('aggregate').set(data).catch(err => response.send(err));
+            response.send(data);
+        })
+        .catch(err => response.send(err));
+    
+    }).catch(err => response.send(err));
+
 });
