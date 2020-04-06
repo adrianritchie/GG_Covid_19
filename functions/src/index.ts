@@ -4,16 +4,21 @@ import * as https from 'https';
 import * as cheerio from 'cheerio';
 import * as moment from 'moment';
 import * as sgMail from '@sendgrid/mail';
+// @ts-ignore
+import * as chrono from 'chrono-node';
 
 
 admin.initializeApp();
 const db = admin.firestore();
 
-const url = 'https://www.gov.gg/covid19testresults';
+const url = 'https://covid19.gov.gg/test-results';
+
 const sg_api_key = functions.config().sendgrid.api;
 const sg_update_id = functions.config().sendgrid.update;
 sgMail.setApiKey(sg_api_key);
 
+const graphDataUrl = 'https://europe-west2-gg-covid-19.cloudfunctions.net/graphData?clearResults=true';
+const latestDataUrl = 'https://europe-west2-gg-covid-19.cloudfunctions.net/latestData?clearResults=true';
 const aggregate_map = {
     'Awaiting results': 'awaiting_results',
     'Negative results': 'negative',
@@ -22,9 +27,17 @@ const aggregate_map = {
     'Positive results': 'positive'
 };
 
+const translate: any = {
+    "Samples tested": "Number of samples tested",
+    "No. of deaths": "Number of deaths",
+    "Awaiting results": "Awaiting results",
+    "Negative results": "Negative results",
+    "Positive results": "Positive results",
+    "Number recovered": "Number Recovered"
+}
 const sendNotifications = async function (data: any, nextPageToken?: string) {
-    
-    console.log("sendNotifications");
+
+    console.log(`sendNotifications: ${nextPageToken}`);
 
     const msg = {
         to: new Array<string>(),
@@ -39,10 +52,18 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
     userList.users.forEach(userRecord => {
         if (userRecord.emailVerified && userRecord.email) {
             msg.to.push(userRecord.email);
+            //msg.to.push('ar@kodo.gg');
         }
     });
 
-    await sgMail.sendMultiple(msg);
+    console.log(msg);
+
+    try {
+        sgMail.sendMultiple(msg).catch(err => console.log('error from sendGrid', err));
+    }
+    catch (err) {
+        console.log('exception from try sendgrid', err);
+    }
 
     if (userList.pageToken) {
         // List next batch of users.
@@ -50,36 +71,59 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
     }
 }
 
-const storeUpdate = function (data: any, type: string) {
-    if (lastGrabbed < new Date(data['Updated'])) {
+const storeUpdate = async function (data: any, done: (value: any) => void) {
+    const existing = await db.collection('tracking').orderBy('Saved', 'desc').limit(1).get();
+    const lastUpdate = new Date(existing.docs[0].data().Updated);
 
-        db.collection('tracking').add(data).catch((err) => { console.log("Error: " + err.message); });
-
-        if (!!results) {
-            results.cacheUntil = moment().add(30, 'm');
-
-            for (const key in data) {
-                if (!results.hasOwnProperty(key)) {
-                    results[key] = [];
-                }
-                results[key].push(data[key]);
-            }
+    if (new Date(lastUpdate) < new Date(data['Updated'])) {
+        try {
+            db.collection('tracking').add(data).catch((err) => { console.log("Error: " + err.message); });
+        }
+        catch (err) {
+            console.log('Error with saving to db: ', err);
         }
 
-        latest = {};
-        for (const key in data) {
-            latest[key].push(data[key]);
+        try {
+            sendNotifications(data).catch(err => console.log(err));
         }
-        latest['cacheUntil'] = moment().add(30, 'm');
+        catch (err) {
+            console.log("Caught error: ", err);
+        }
 
+        https.get(graphDataUrl, (resp) => {
+            resp.on('data', (chunk) => console.log(chunk));
+            resp.on('end', () => console.log('Graph data cleared'));
+        }).on("error", (err) => { console.log("Error: " + err.message); });
 
-        sendNotifications(data).catch(err => console.log(err));
-        lastGrabbed = new Date(data['Updated']);
-        return data;
+        https.get(latestDataUrl, (resp) => {
+            resp.on('data', (chunk) => console.log(chunk));
+            resp.on('end', () => console.log('Latest data cleared'));
+        }).on("error", (err) => { console.log("Error: " + err.message); });
+
+        done(data);
     }
     else {
-        return `No change - ${type}`;
+        done('No change');
     }
+}
+
+const scrapeData = function (source: string) {
+    const $ = cheerio.load(source);
+    const date_updated = $('div.ace-paragraph-notice-information').text();
+    const table = $('div.ace-paragraph-data-infographic').first();
+
+    const o: any = {};
+
+    table.find('.ace-paragraph-data').map(function (i, el) {
+        const label = $('.ace-field-type', this).text().trim();
+        const value = $('.ace-field-value', this).text().trim();
+        o[translate[label]] = parseInt(value);
+    });
+
+    o["Updated"] = chrono.parseDate(date_updated).toISOString();
+    o["Saved"] = new Date().toISOString();
+
+    return o;
 }
 
 // // Start writing Firebase Functions
@@ -87,112 +131,49 @@ const storeUpdate = function (data: any, type: string) {
 //
 export const refreshData = functions.region('europe-west2').https.onRequest((request, response) => {
     const req = https.get(url, (resp) => {
-        let data: string = '';
-        resp.on('data', (chunk) => { data += chunk; });
+        let source: string = '';
+        resp.on('data', (chunk) => { source += chunk; });
         resp.on('end', () => {
-            const $ = cheerio.load(data);
-            const date_updated = $('meta[name="DC.date.modified"]').attr('content');
-            const table = $('table').first();
+            const data = scrapeData(source);
 
-            const scraped_data: Array<Array<string>> = [];
-
-            table.find('tr').map(function (i, el) {
-                scraped_data.push([]);
-                return $(this).find('td').map(function (j, fl) {
-                    scraped_data[i].push($(this).text())
-                })
-            });
-
-            const o: any = {};
-            for (let i = 0; i < scraped_data[0].length; i++) {
-                o[scraped_data[0][i]] = parseInt(scraped_data[1][i]);
-            }
-            o["Updated"] = date_updated;
-            o["Saved"] = new Date().toISOString();
-
-            if (!!lastGrabbed) {
-                const result = storeUpdate(o, 'quick check')
-                response.send(result);
-            }
-            else {
-                db.collection('tracking')
-                    .orderBy('Updated', 'desc').limit(1).get()
-                    .then(querySnapshot => {
-                        querySnapshot.forEach(documentSnapshot => {
-                            lastGrabbed = new Date(documentSnapshot.get('Updated'));
-                        });
-                    })
-                    .then(() => {
-                        const result = storeUpdate(o, 'reload check')
-                        response.send(result);
-                    })
-                    .catch(err => response.send(err));
-            }
+            storeUpdate(data, (result) => response.send(result))
+                .then(() => console.log('store complete'))
+                .catch(err => {
+                    console.log('problem calling storeUpdate', err);
+                    response.send(`storeUpdate error ${err}`);
+                });
         });
 
-    }).on("error", (err) => { console.log("Error: " + err.message); });
-
-
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+        response.send(`Error: ${err}`);
+    });
 });
 
 export const updateData = functions.region('europe-west2').pubsub.schedule('*/15 * * * *').timeZone('europe/london').onRun((context) => {
-
     const req = https.get(url, (resp) => {
-        let data: string = '';
-        resp.on('data', (chunk) => { data += chunk; });
+        let source: string = '';
+        resp.on('data', (chunk) => { source += chunk; });
         resp.on('end', () => {
-            const $ = cheerio.load(data);
-            const date_updated = $('meta[name="DC.date.modified"]').attr('content');
-            const table = $('table').first();
 
-            const scraped_data: Array<Array<string>> = [];
+            const data = scrapeData(source);
 
-            table.find('tr').map(function (i, el) {
-                scraped_data.push([]);
-                return $(this).find('td').map(function (j, fl) {
-                    scraped_data[i].push($(this).text())
-                })
-            });
-
-            const o: any = {};
-
-            for (let i = 0; i < scraped_data[0].length; i++) {
-                o[scraped_data[0][i]] = parseInt(scraped_data[1][i]);
-            }
-            o["Updated"] = date_updated;
-            o["Saved"] = new Date().toISOString();
-
-            if (!!lastGrabbed) {
-                const result = storeUpdate(o, 'quick check')
-                console.log(result);
-            }
-            else {
-                db.collection('tracking')
-                    .orderBy('Updated', 'desc').limit(1).get()
-                    .then(querySnapshot => {
-                        querySnapshot.forEach(documentSnapshot => {
-                            lastGrabbed = new Date(documentSnapshot.get('Updated'));
-                        });
-                    })
-                    .then(() => {
-                        const result = storeUpdate(o, 'reload check')
-                        console.log(result);
-                    })
-                    .catch(err => console.log("Error: " + err.message));
-            }
+            storeUpdate(data, (result) => console.log(result))
+                .then(() => console.log('store complete'))
+                .catch(err => console.log('problem calling storeUpdate', err));
         });
-
     }).on("error", (err) => { console.log("Error: " + err.message); });
 
+    return null;
 });
 
-export const graphData = functions.region('europe-west2').runWith({ memory: '512MB'}).https.onRequest((request, response) => {
+export const graphData = functions.region('europe-west2').runWith({ memory: '512MB' }).https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*');
 
     if (!!request.query.clearResults) {
         results = null;
-        // response.send('Graph data cleared');
-        // return;
+        response.send('Graph data cleared');
+        return;
     }
 
     const exclude = ['Awaiting Testing'];
@@ -200,7 +181,7 @@ export const graphData = functions.region('europe-west2').runWith({ memory: '512
     if (!results || results.cacheUntil < moment()) {
         results = { cacheUntil: moment().add(30, 'm') };
 
-        db.collection('tracking').orderBy('Updated', 'desc').limit(100).get()
+        db.collection('tracking').orderBy('Updated', 'desc').get()
             .then(querySnapshot => {
                 querySnapshot.forEach(doc => {
                     const data = doc.data();
@@ -228,7 +209,13 @@ export const graphData = functions.region('europe-west2').runWith({ memory: '512
 export const latestData = functions.region('europe-west2').https.onRequest((request, response) => {
     response.set('Access-Control-Allow-Origin', '*');
 
-    if (!latest || latest?.cacheUntil < moment() || !!request.query.clearResults) {
+    if (!!request.query.clearResults) {
+        results = null;
+        response.send('latest data cleared');
+        return;
+    }
+
+    if (!latest || latest?.cacheUntil < moment()) {
         db.collection('tracking')
             .orderBy('Updated', 'desc').limit(1).get()
             .then(querySnapshot => {
