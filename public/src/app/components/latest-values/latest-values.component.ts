@@ -14,6 +14,8 @@ export class LatestValuesComponent implements OnInit {
   negative: number;
   positive: number;
   deaths: number;
+  recovered: number;
+  presumedDeaths: number;
 
   loading = true;
 
@@ -28,6 +30,8 @@ export class LatestValuesComponent implements OnInit {
         this.negative = data['Negative results'];
         this.positive = data['Positive results'];
         this.deaths = data['Number of deaths'];
+        this.recovered = data['Number Recovered'];
+        this.presumedDeaths = data['Number of presumed deaths'];
         this.loading = false;
       }
     );
