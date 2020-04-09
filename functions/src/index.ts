@@ -27,12 +27,14 @@ const aggregate_map : { [id: string] : string; } = {
     'Number of samples tested': 'tested',
     'Positive results': 'positive',
     'Awaiting Testing': 'awaiting_testing',
-    'Number Recovered': 'recovered'
+    'Number Recovered': 'recovered',
+    'No. of presumptive deaths': 'presumed_death'
 };
 
 const translate: any = {
     "Samples tested": "Number of samples tested",
     "No. of deaths": "Number of deaths",
+    "No. of presumptive deaths": "Number of presumed deaths",
     "Awaiting results": "Awaiting results",
     "Negative results": "Negative results",
     "Positive results": "Positive results",
@@ -275,20 +277,10 @@ export const rebuildAggregateData = functions.region('europe-west2').https.onReq
     db.collection('graph_data').doc('aggregate').get().then(v => {
         data = v.data();
         
-        data.awaiting_results.x = [];
-        data.awaiting_results.y = [];
-        data.negative.x = [];
-        data.negative.y = [];
-        data.deaths.x = [];
-        data.deaths.y = [];
-        data.tested.x = [];
-        data.tested.y = [];
-        data.positive.x = [];
-        data.positive.y = [];
-        data.awaiting_testing.x = [];
-        data.awaiting_testing.y = [];
-        data.recovered.x = [];
-        data.recovered.y = [];
+        for (const set_key in data) {
+            data[set_key].x = [];
+            data[set_key].y = [];
+        }
     
         db.collection('tracking')
         .orderBy('Updated', 'asc').get()
