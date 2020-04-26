@@ -23,6 +23,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { RegisterModalComponent } from './components/modals/auth/register-modal/register-modal.component';
 import { LoginModalComponent } from './components/modals/auth/login-modal/login-modal.component';
 import { CancelModalComponent } from './components/modals/auth/cancel-modal/cancel-modal.component';
+import { FightComponent } from './components/fight/fight.component';
 
 PlotlyViaCDNModule.plotlyVersion = 'latest'; // can be `latest` or any version number (i.e.: '1.40.0')
 PlotlyViaCDNModule.plotlyBundle = 'basic'; // optional: can be null (for full) or 'basic', 'cartesian',
@@ -41,7 +42,8 @@ PlotlyViaCDNModule.plotlyBundle = 'basic'; // optional: can be null (for full) o
     NavbarComponent,
     RegisterModalComponent,
     LoginModalComponent,
-    CancelModalComponent
+    CancelModalComponent,
+    FightComponent
   ],
   imports: [
     BrowserModule,

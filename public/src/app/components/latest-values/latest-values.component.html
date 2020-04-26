@@ -15,7 +15,7 @@
     </div>
   </div> -->
 
-  <div class="flex-fill py-sm-0 px-md-2">
+  <div class="flex-fill py-sm-0 pr-md-2">
     <div class="small-box bg-info">
       <div *ngIf="loading" class="overlay dark ggLoading">
         <i class="fas fa-3x fa-sync-alt"></i>
@@ -75,17 +75,48 @@
       </div>
     </div>
   </div>
+</div>
 
-  <div class="flex-fill pl-md-2">
-    <div class="small-box bg-secondary">
+
+<div class="d-flex flex-column flex-md-row currentNumbers pt-3">
+  <div class="flex-fill py-sm-0 pr-md-2 flex-grow-1 flex-shrink-0">
+    <div class="small-box bg-pink">
+      <div *ngIf="loading" class="overlay dark ggLoading">
+        <i class="fas fa-3x fa-sync-alt"></i>
+      </div>
+      <div class="inner">
+        <h3 id="recovered">{{ loading ? "-" : recovered }}</h3>
+        <p>Recovered</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-running"></i>
+      </div>
+    </div>
+  </div>
+  <div class="flex-fill py-sm-0 px-md-2 flex-grow-1 flex-shrink-0">
+    <div class="small-box bg-gray color-palette">
+      <div *ngIf="loading" class="overlay dark ggLoading">
+        <i class="fas fa-3x fa-sync-alt"></i>
+      </div>
+      <div class="inner">
+        <h3 id="presumedDeaths">{{ loading ? "-" : presumedDeaths }}</h3>
+        <p>Presumed covid deaths</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-skull-crossbones"></i>
+      </div>
+    </div>
+  </div>
+  <div class="flex-fill py-sm-0 pl-md-2 flex-grow-1 flex-shrink-0">
+    <div class="small-box bg-gray-dark color-palette">
       <div *ngIf="loading" class="overlay dark ggLoading">
         <i class="fas fa-3x fa-sync-alt"></i>
       </div>
       <div class="inner">
         <h3 id="confirmedDeaths">{{ loading ? "-" : deaths }}</h3>
-        <p>Recorded deaths</p>
+        <p>Confirmed covid deaths</p>
       </div>
-      <div class="icon">
+      <div class="icon text-secondary color-palette">
         <i class="fas fa-skull-crossbones"></i>
       </div>
     </div>

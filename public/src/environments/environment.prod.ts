@@ -7,7 +7,9 @@ export const environment = {
     'Negative results': 'rgb(44, 160, 44)',
     'Number of samples tested': 'rgb(31, 119, 180)',
     'Number of deaths': 'rgb(0, 0, 0)',
-    'Awaiting Testing': '#605ca8'
+    'Awaiting Testing': '#605ca8',
+    'Number Recovered': '#e83e8c',
+    'Number of presumed deaths': '#343a40'
   },
 
   firebase: {

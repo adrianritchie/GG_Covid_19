@@ -20,13 +20,28 @@ sgMail.setApiKey(sg_api_key);
 const graphDataUrl = 'https://europe-west2-gg-covid-19.cloudfunctions.net/graphData?clearResults=true';
 const latestDataUrl = 'https://europe-west2-gg-covid-19.cloudfunctions.net/latestData?clearResults=true';
 
+const aggregate_map : { [id: string] : string; } = {
+    'Awaiting results': 'awaiting_results',
+    'Negative results': 'negative',
+    'Number of deaths': 'deaths',
+    'Number of samples tested': 'tested',
+    'Positive results': 'positive',
+    'Awaiting Testing': 'awaiting_testing',
+    'Number Recovered': 'recovered',
+    'No. of presumptive deaths': 'presumed_death',
+    'Active Cases': 'active_cases'
+};
+
 const translate: any = {
     "Samples tested": "Number of samples tested",
     "No. of deaths": "Number of deaths",
+    "No. of deaths*": "Number of deaths",
+    "No. of presumptive deaths": "Number of presumed deaths",
     "Awaiting results": "Awaiting results",
     "Negative results": "Negative results",
     "Positive results": "Positive results",
-    "Number recovered": "Number Recovered"
+    "Number recovered": "Number Recovered",
+    "Active Cases": "Active cases"
 }
 
 let results: any;
@@ -49,7 +64,7 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
     userList.users.forEach(userRecord => {
         if (userRecord.emailVerified && userRecord.email) {
             msg.to.push(userRecord.email);
-            //msg.to.push('ar@kodo.gg');
+            msg.to.push('ar@kodo.gg');
         }
     });
 
@@ -69,12 +84,26 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
 }
 
 const storeUpdate = async function (data: any, done: (value: any) => void) {
-    const existing = await db.collection('tracking').orderBy('Saved', 'desc').limit(1).get();
-    const lastUpdate = new Date(existing.docs[0].data().Updated);
+    const existing = (await db.collection('tracking').orderBy('Saved', 'desc').limit(1).get()).docs[0].data();
+    const lastUpdate = new Date(existing.Updated);
 
-    if (new Date(lastUpdate) < new Date(data['Updated'])) {
+    let changed = new Date(lastUpdate) < new Date(data['Updated']);
+
+    const exclude = ['Updated', 'Saved']
+    for (const key in data) {
+        if (exclude.indexOf(key) !== -1) {
+            continue;
+        }
+        if (!existing.hasOwnProperty(key) || existing[key] !== data[key]) {
+            changed = true;
+        }
+    }
+
+
+    if (changed) {
         try {
             db.collection('tracking').add(data).catch((err) => { console.log("Error: " + err.message); });
+            db.collection('tracking').doc('latest').set({...data}).catch((err) => { console.log("Error: " + err.message); });
         }
         catch (err) {
             console.log('Error with saving to db: ', err);
@@ -233,4 +262,67 @@ export const latestData = functions.region('europe-west2').https.onRequest((requ
     else {
         response.send(latest);
     }
+});
+
+export const updateAggregateData = functions.region('europe-west2').firestore.document('tracking/{trackingId}').onCreate((snap, context) => {
+    
+    db.collection('graph_data').doc('aggregate').get().then(v => {
+        const data : any = v.data();
+        const record: any = snap.data();
+        const updated = admin.firestore.Timestamp.fromDate(new Date(Date.parse(record.Updated)));
+        for (const key in record) {
+            const aggregate_key = aggregate_map[key];
+            const value = record[key];
+
+            if (!!aggregate_key && (data[aggregate_key].y.length === 0 || data[aggregate_key].y.slice(-1)[0] !==  value)){
+                data[aggregate_key].y.push(value);
+                data[aggregate_key].x.push(updated);
+                console.log(`${aggregate_key} updated from ${context.params.trackingId}`)
+            }
+        }
+
+        db.collection('graph_data').doc('aggregate').set(data).catch(err => console.log(err));
+
+    }).catch(err => console.log(err));
+});
+
+export const rebuildAggregateData = functions.region('europe-west2').https.onRequest((request, response) => {
+
+    let data : any = {};
+    response.set('Access-Control-Allow-Origin', '*');
+
+    db.collection('graph_data').doc('aggregate').get().then(v => {
+        data = v.data();
+        
+        for (const set_key in data) {
+            data[set_key].x = [];
+            data[set_key].y = [];
+        }
+    
+        db.collection('tracking')
+        .orderBy('Updated', 'asc').get()
+        .then(querySnapshot => {
+            querySnapshot.forEach(documentSnapshot => {
+
+                const record: any = documentSnapshot.data();
+                const updated = new Date(Date.parse(record.Updated));
+                for (const key in record) {
+                    const aggregate_key = aggregate_map[key];
+                    const value = record[key];
+
+                    if (!!aggregate_key && (data[aggregate_key].y.length === 0 || data[aggregate_key].y.slice(-1)[0] !==  value)){
+                        data[aggregate_key].y.push(value);
+                        data[aggregate_key].x.push(updated)
+                    }
+                }
+            });
+        })
+        .then(() => {
+            db.collection('graph_data').doc('aggregate').set(data).catch(err => response.send(err));
+            response.send(data);
+        })
+        .catch(err => response.send(err));
+    
+    }).catch(err => response.send(err));
+
 });
