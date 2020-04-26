@@ -29,6 +29,7 @@ const aggregate_map : { [id: string] : string; } = {
     'Awaiting Testing': 'awaiting_testing',
     'Number Recovered': 'recovered',
     'No. of presumptive deaths': 'presumed_death',
+    'Active Cases': 'active_cases'
 };
 
 const translate: any = {
@@ -40,6 +41,7 @@ const translate: any = {
     "Negative results": "Negative results",
     "Positive results": "Positive results",
     "Number recovered": "Number Recovered",
+    "Active Cases": "Active cases"
 }
 
 let results: any;
