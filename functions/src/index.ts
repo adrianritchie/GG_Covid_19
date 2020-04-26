@@ -28,17 +28,18 @@ const aggregate_map : { [id: string] : string; } = {
     'Positive results': 'positive',
     'Awaiting Testing': 'awaiting_testing',
     'Number Recovered': 'recovered',
-    'No. of presumptive deaths': 'presumed_death'
+    'No. of presumptive deaths': 'presumed_death',
 };
 
 const translate: any = {
     "Samples tested": "Number of samples tested",
     "No. of deaths": "Number of deaths",
+    "No. of deaths*": "Number of deaths",
     "No. of presumptive deaths": "Number of presumed deaths",
     "Awaiting results": "Awaiting results",
     "Negative results": "Negative results",
     "Positive results": "Positive results",
-    "Number recovered": "Number Recovered"
+    "Number recovered": "Number Recovered",
 }
 
 let results: any;
@@ -61,7 +62,7 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
     userList.users.forEach(userRecord => {
         if (userRecord.emailVerified && userRecord.email) {
             msg.to.push(userRecord.email);
-            //msg.to.push('ar@kodo.gg');
+            msg.to.push('ar@kodo.gg');
         }
     });
 
@@ -81,12 +82,26 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
 }
 
 const storeUpdate = async function (data: any, done: (value: any) => void) {
-    const existing = await db.collection('tracking').orderBy('Saved', 'desc').limit(1).get();
-    const lastUpdate = new Date(existing.docs[0].data().Updated);
+    const existing = (await db.collection('tracking').orderBy('Saved', 'desc').limit(1).get()).docs[0].data();
+    const lastUpdate = new Date(existing.Updated);
 
-    if (new Date(lastUpdate) < new Date(data['Updated'])) {
+    let changed = new Date(lastUpdate) < new Date(data['Updated']);
+
+    const exclude = ['Updated', 'Saved']
+    for (const key in data) {
+        if (exclude.indexOf(key) !== -1) {
+            continue;
+        }
+        if (!existing.hasOwnProperty(key) || existing[key] !== data[key]) {
+            changed = true;
+        }
+    }
+
+
+    if (changed) {
         try {
             db.collection('tracking').add(data).catch((err) => { console.log("Error: " + err.message); });
+            db.collection('tracking').doc('latest').set({...data}).catch((err) => { console.log("Error: " + err.message); });
         }
         catch (err) {
             console.log('Error with saving to db: ', err);
