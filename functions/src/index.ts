@@ -41,7 +41,11 @@ const translate: any = {
     "Negative results": "Negative results",
     "Positive results": "Positive results",
     "Number recovered": "Number Recovered",
-    "Active Cases": "Active cases"
+    "Active Cases": "Active cases",
+    "Awaiting results*": "Awaiting results",
+    "No. of deaths**": "Number of deaths",
+    "No. of presumtive deaths": "Number of presumed deaths",
+    "Known active cases": "Active cases"
 }
 
 let results: any;
@@ -63,15 +67,15 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
 
     userList.users.forEach(userRecord => {
         if (userRecord.emailVerified && userRecord.email) {
-            msg.to.push(userRecord.email);
-            msg.to.push('ar@kodo.gg');
+            //msg.to.push(userRecord.email);
+            //msg.to.push('ar@kodo.gg');
         }
     });
 
     console.log(msg);
 
     try {
-        sgMail.sendMultiple(msg).catch(err => console.log('error from sendGrid', err));
+        //sgMail.sendMultiple(msg).catch(err => console.log('error from sendGrid', err));
     }
     catch (err) {
         console.log('exception from try sendgrid', err);
@@ -79,7 +83,7 @@ const sendNotifications = async function (data: any, nextPageToken?: string) {
 
     if (userList.pageToken) {
         // List next batch of users.
-        await sendNotifications(data, userList.pageToken);
+        // await sendNotifications(data, userList.pageToken);
     }
 }
 
