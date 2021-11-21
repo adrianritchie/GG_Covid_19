@@ -147,7 +147,7 @@ const scrapeData = function (source: string) {
     table.find('.ace-paragraph-data').map(function (i, el) {
         const label = $('.ace-field-type', this).text().trim();
         const value = $('.ace-field-value', this).text().trim();
-        o[translate[label]] = parseInt(value);
+        o[translate[label]] = parseInt(value.replace(/,/g, ''), 10);
     });
 
     o["Updated"] = chrono.parseDate(date_updated).toISOString();
